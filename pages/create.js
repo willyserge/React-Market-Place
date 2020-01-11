@@ -1,6 +1,8 @@
 
 import { Header, Icon, Form, Input, TextArea, Button, Image, Message } from "semantic-ui-react";
+import axios from 'axios'
 import { useState } from "react";
+import baseUrl from '../utils/baseUrl'
 
 function CreateProduct() {
 
@@ -33,14 +35,32 @@ function CreateProduct() {
     }
   }
 
-  const handleSubmit = (e)=>{
+  const handleImageUpload = async ()=>{
+    const data = new FormData()
+    data.append('file',product.media)
+    data.append('upload_preset','market-place')
+    data.append('cloud_name','dorlzbjs4')
+    const response = await axios.post(process.env.CLOUDINARY_URL,data)
+    const mediaUrl = response.data.url;
+    return mediaUrl;
+    
+
+  }
+
+  const handleSubmit = async (e)=>{
     e.preventDefault();
-    console.log(product)
+    const mediaUrl = await handleImageUpload();
+    const url=`${baseUrl}/api/product`;
+    const { name , price , description } = product;
+    const payload = { name , price , description , mediaUrl };
+    await axios.post(url,payload)
     setProduct(INITIAL_PRODUCT)
     setsuccess(true)
     
 
   }
+
+
 
   return (
     <>
