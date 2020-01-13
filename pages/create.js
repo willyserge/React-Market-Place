@@ -18,6 +18,7 @@ function CreateProduct() {
   const [mediaPreview, setMediaPreview] = useState('')
 
   const [success, setsuccess] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const handleChange = (e)=>{
     const { name , value , files} = e.target;
@@ -49,13 +50,18 @@ function CreateProduct() {
 
   const handleSubmit = async (e)=>{
     e.preventDefault();
+    setLoading(true)
     const mediaUrl = await handleImageUpload();
+    console.log(mediaUrl)
     const url=`${baseUrl}/api/product`;
     const { name , price , description } = product;
     const payload = { name , price , description , mediaUrl };
-    await axios.post(url,payload)
+    const response = await axios.post(url,payload)
+    console.log({response})
+    setLoading(false)
     setProduct(INITIAL_PRODUCT)
     setsuccess(true)
+    
     
 
   }
@@ -68,7 +74,7 @@ function CreateProduct() {
       <Icon name="add" color="orange"/>
         Create new product
       </Header>
-      <Form success={success} onSubmit={handleSubmit}>
+      <Form loading={loading} success={success} onSubmit={handleSubmit}>
 
       <Message success icon="check" header="Success!" content="Your product has been posted"/>
         <Form.Group widths='equal'>
