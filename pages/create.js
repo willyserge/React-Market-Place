@@ -1,7 +1,7 @@
 
 import { Header, Icon, Form, Input, TextArea, Button, Image, Message } from "semantic-ui-react";
 import axios from 'axios'
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import baseUrl from '../utils/baseUrl'
 
 function CreateProduct() {
@@ -19,6 +19,13 @@ function CreateProduct() {
 
   const [success, setsuccess] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [disabled, setDisabled] = useState(true)
+
+  useEffect(()=>{
+    const isProduct = Object.values(product).every(el=>Boolean(el));
+    isProduct ? setDisabled(false) : setDisabled(true)
+  },
+  [product])
 
   const handleChange = (e)=>{
     const { name , value , files} = e.target;
@@ -125,6 +132,7 @@ function CreateProduct() {
 
           <Form.Field 
              control= {Button}
+             disabled={disabled}
              color="blue"
              icon="pencil alternate"
              placeholder="Description"
