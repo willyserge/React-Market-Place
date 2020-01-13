@@ -1,10 +1,14 @@
 import Product from '../../models/Product'
-
+import connectDb from '../../utils/connectDb'
+connectDb();
 
 export default async (req,res) =>{
     switch (req.method) {
         case "GET":
             await handleGetRequest(req,res);
+            break;
+        case "POST":
+            await handlePostRequest(req,res);
             break;
     
         case "DELETE":
@@ -14,6 +18,18 @@ export default async (req,res) =>{
         default:
             res.status(405).send(`Method ${req.method} not allowed`)
     }
+}
+
+async function handlePostRequest(req,res){
+    const { name ,price , description  , mediaUrl} = req.body;
+    
+    const product = await new Product({
+        name,
+        price,
+        description,
+        mediaUrl
+    }).save();
+    res.status(201).json(product);
 }
 
 async function handleGetRequest(req,res){
