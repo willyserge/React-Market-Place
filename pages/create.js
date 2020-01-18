@@ -3,6 +3,7 @@ import { Header, Icon, Form, Input, TextArea, Button, Image, Message } from "sem
 import axios from 'axios'
 import { useState , useEffect } from "react";
 import baseUrl from '../utils/baseUrl'
+import catchErrors from '../utils/catchErrors'
 
 function CreateProduct() {
 
@@ -20,6 +21,7 @@ function CreateProduct() {
   const [success, setsuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(()=>{
     const isProduct = Object.values(product).every(el=>Boolean(el));
@@ -56,6 +58,9 @@ function CreateProduct() {
   }
 
   const handleSubmit = async (e)=>{
+
+   try {
+
     e.preventDefault();
     setLoading(true)
     const mediaUrl = await handleImageUpload();
@@ -68,9 +73,13 @@ function CreateProduct() {
     setLoading(false)
     setProduct(INITIAL_PRODUCT)
     setsuccess(true)
-    
-    
 
+   } catch (error) {
+     setLoading(false)
+     catchErrors(error,setError)
+   }finally{
+     setLoading(false)
+   }
   }
 
 
@@ -81,9 +90,25 @@ function CreateProduct() {
       <Icon name="add" color="orange"/>
         Create new product
       </Header>
-      <Form loading={loading} success={success} onSubmit={handleSubmit}>
+      <Form 
+        loading={loading}
+        error={Boolean(error)}
+        success={success}
+        onSubmit={handleSubmit}>
 
-      <Message success icon="check" header="Success!" content="Your product has been posted"/>
+      <Message
+        error
+        header='Oops'
+        content={error}
+      />
+
+      <Message 
+        success 
+        icon="check"
+        header="Success!"
+        content="Your product has been posted"
+
+        />
         <Form.Group widths='equal'>
            <Form.Field 
              control= {Input}

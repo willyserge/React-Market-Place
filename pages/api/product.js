@@ -20,17 +20,27 @@ export default async (req,res) =>{
     }
 }
 
-async function handlePostRequest(req,res){
-    const { name ,price , description  , mediaUrl} = req.body;
-    
-    const product = await new Product({
+const handlePostRequest = async (req, res) => {
+    try {
+      const { name, price, description, mediaUrl } = req.body;
+      if (!name || !price || !description || !mediaUrl)
+        return res.status(422).send("Product missing one or more fileds");
+  
+      const product = await new Product({
         name,
         price,
         description,
-        mediaUrl
-    }).save();
-    res.status(201).json(product);
-}
+        mediaUrl,
+      }).save();
+  
+      res.status(201).json(product);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send("Server error in creating product");
+    }
+  };
+  
+
 
 async function handleGetRequest(req,res){
     const { _id } = req.query;
